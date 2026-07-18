@@ -11,16 +11,16 @@ fecha_inicio = "2020-01-01"
 fecha_final = "2024-01-01"
 ticker = "AMZN"
 
-# Fuente: Stooq
+# Fuente: Stooq (usando web.DataReader)
 try:
-    df = pdr.get_data_stooq(symbols=ticker, start=fecha_inicio, end=fecha_final)
+    df = web.DataReader(name=ticker, data_source="stooq", start=fecha_inicio, end=fecha_final)
     df = df[::-1]
     print(df)
 except Exception as error:
     print("No se pudo recuperar la información con error ->", error)
     
 
-# Fuente: Stooq
+# Fuente: Stooq (usando StooqDailyReader directamente)
 try:
     df = pdr.stooq.StooqDailyReader(symbols=ticker, start=fecha_inicio, end=fecha_final).read()
     df = df[::-1]
@@ -29,9 +29,9 @@ except Exception as error:
     print("No se pudo recuperar la información con error ->", error)
     
     
-# Fuente: Yahoo
+# Fuente: Yahoo (usando web.DataReader)
 try:
-    df = pdr.get_data_yahoo(symbols=ticker, start=fecha_inicio, end=fecha_final)
+    df = web.DataReader(name=ticker, data_source="yahoo", start=fecha_inicio, end=fecha_final)
     df = df[::-1]
     print(df)
 except Exception as error:
@@ -59,3 +59,4 @@ plt.show()
     
 # Recordatorio:
 #   - Debemos de mantener actualizadas las librerías para evitar cualquier posible error (pip install --upgrade pandas-datareader)
+#   - Funciones deprecated: pdr.get_data_stooq() y pdr.get_data_yahoo() - usar web.DataReader() en su lugar
