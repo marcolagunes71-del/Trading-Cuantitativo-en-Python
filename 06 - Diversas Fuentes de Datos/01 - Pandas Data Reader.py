@@ -11,28 +11,25 @@ fecha_inicio = "2020-01-01"
 fecha_final = "2024-01-01"
 ticker = "AMZN"
 
-# Fuente: Stooq (usando web.DataReader)
+# Fuente: Yahoo Finance
 try:
-    df = web.DataReader(name=ticker, data_source="stooq", start=fecha_inicio, end=fecha_final)
-    df = df[::-1]
+    df = web.DataReader(name=ticker, data_source="yahoo", start=fecha_inicio, end=fecha_final)
     print(df)
 except Exception as error:
     print("No se pudo recuperar la información con error ->", error)
     
 
-# Fuente: Stooq (usando StooqDailyReader directamente)
+# Fuente: Yahoo Finance (usando YahooDailyReader directamente)
 try:
-    df = pdr.stooq.StooqDailyReader(symbols=ticker, start=fecha_inicio, end=fecha_final).read()
-    df = df[::-1]
+    df = pdr.yahoo.YahooFinanceReader(symbols=ticker, start=fecha_inicio, end=fecha_final).read()
     print(df)
 except Exception as error:
     print("No se pudo recuperar la información con error ->", error)
     
     
-# Fuente: Yahoo (usando web.DataReader)
+# Fuente: Yahoo Finance (múltiples métodos)
 try:
     df = web.DataReader(name=ticker, data_source="yahoo", start=fecha_inicio, end=fecha_final)
-    df = df[::-1]
     print(df)
 except Exception as error:
     print("No se pudo recuperar la información con error ->", error)
@@ -42,7 +39,7 @@ except Exception as error:
 tickers = ["AMZN", "AAPL", "MSFT"]
 fecha_inicio = datetime(2020, 1, 1)
 fecha_final = datetime(2024, 1, 1)
-df = web.DataReader(name=tickers, data_source="stooq", start=fecha_inicio, end=fecha_final)
+df = web.DataReader(name=tickers, data_source="yahoo", start=fecha_inicio, end=fecha_final)
     
     
 close = df["Close"]
@@ -59,4 +56,5 @@ plt.show()
     
 # Recordatorio:
 #   - Debemos de mantener actualizadas las librerías para evitar cualquier posible error (pip install --upgrade pandas-datareader)
-#   - Funciones deprecated: pdr.get_data_stooq() y pdr.get_data_yahoo() - usar web.DataReader() en su lugar
+#   - Fuentes de datos soportadas: yahoo (recomendado), fred, google, etc.
+#   - Stooq ya no está disponible en pandas-datareader
