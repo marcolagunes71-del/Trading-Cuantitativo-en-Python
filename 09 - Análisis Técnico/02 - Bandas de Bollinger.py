@@ -54,8 +54,15 @@ def Bollinger_Bands(df: pd.DataFrame, longitud: int = 20, desviacion_std: float 
 df = yf.download(tickers="PYPL", start="2023-01-01", end="2024-01-01", interval="1d")
 # Calcular Bandas de Bollinger
 bb = Bollinger_Bands(df, longitud=20, desviacion_std=2.0)
+
+# Crear plots adicionales para cada banda
+bb_plot = [
+    mpf.make_addplot(bb["BB_Up"], color="red"),
+    mpf.make_addplot(bb["MA"], color="blue"),
+    mpf.make_addplot(bb["BB_Lw"], color="red")
+]
+
 # Plot
-bb_plot = mpf.make_addplot(bb)
 mpf.plot(df, type="candle", style="yahoo", volume=True, figsize=(22, 10), addplot=bb_plot, figscale=2.0, title="Bandas de Bollinger")
 plt.show()
     
