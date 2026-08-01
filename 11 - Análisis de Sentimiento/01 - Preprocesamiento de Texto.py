@@ -1,13 +1,76 @@
 # -*- coding: utf-8 -*-
 # Importar librerías
-import nltk
+import sys
+import os
 import string
-from vaderSentiment.vaderSentiment import SentimentIntensityAnalyzer # pip install vaderSentiment
 
-# Descargar recursos necesarios de NLTK
-nltk.download("punkt")
-nltk.download("wordnet")
-nltk.download("stopwords")
+# Comprobar que nltk está instalado y dar instrucciones si no lo está
+try:
+    import nltk
+except ModuleNotFoundError:
+    print("ERROR: El paquete 'nltk' no está instalado en este intérprete.")
+    print("Instálalo ejecutando: python -m pip install nltk vaderSentiment")
+    print("Si usas Jupyter/Colab, en una celda ejecuta: %pip install -q nltk vaderSentiment")
+    sys.exit(1)
+
+# Comprobar que vaderSentiment está instalado y dar instrucciones si no lo está
+try:
+    from vaderSentiment.vaderSentiment import SentimentIntensityAnalyzer  # pip install vaderSentiment
+except ModuleNotFoundError:
+    print("ERROR: El paquete 'vaderSentiment' no está instalado en este intérprete.")
+    print("Instálalo ejecutando: python -m pip install vaderSentiment")
+    print("Si usas Jupyter/Colab, en una celda ejecuta: %pip install -q vaderSentiment")
+    sys.exit(1)
+
+# Función para asegurar recursos de NLTK (punkt, wordnet, stopwords)
+def ensure_nltk_resources(lang='english'):
+    resources = [
+        ('punkt', [f"tokenizers/punkt_tab/{lang}", f"tokenizers/punkt/{lang}", 'tokenizers/punkt']),
+        ('wordnet', ['corpora/wordnet']),
+        ('stopwords', ['corpora/stopwords']),
+    ]
+
+    for res_name, paths in resources:
+        found = False
+        for p in paths:
+            try:
+                nltk.data.find(p)
+                found = True
+                break
+            except LookupError:
+                continue
+
+        if not found:
+            print(f"Recurso NLTK '{res_name}' no encontrado. Intentando descargar '{res_name}'...")
+            try:
+                ok = nltk.download(res_name, quiet=True)
+            except Exception as e:
+                print(f"Error al descargar '{res_name}': {e}")
+                return False
+
+            if not ok:
+                print(f"La descarga de '{res_name}' devolvió False. Comprueba conexión o permisos.")
+                return False
+
+            # revalidar
+            for p in paths:
+                try:
+                    nltk.data.find(p)
+                    found = True
+                    break
+                except LookupError:
+                    continue
+
+            if not found:
+                print(f"No se pudo localizar '{res_name}' tras la descarga. Revisa NLTK_DATA o permisos.")
+                return False
+
+    return True
+
+# Intentar asegurar recursos
+if not ensure_nltk_resources():
+    print("Abortando: faltan recursos de NLTK. Ejecuta manualmente 'nltk.download(...)' si es necesario.")
+    sys.exit(1)
 
 # Texto de ejemplo
 texto = "Cats love to play with small balls! They are playful and energetic."
